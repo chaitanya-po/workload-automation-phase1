@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: my_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: workload_automation
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: workload-backend:1.0
+    container_name: workload_backend
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PASSWORD: admin
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: workload-frontend:1.0
+    container_name: workload_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
