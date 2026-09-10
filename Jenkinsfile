@@ -33,7 +33,12 @@ pipeline {
 
         stage('Health Check') {
             steps {
+                echo 'Waiting for backend to become ready...'
+
+                bat 'powershell -NoProfile -Command "Start-Sleep -Seconds 10"'
+
                 echo 'Performing health check...'
+
                 bat 'powershell -NoProfile -Command "Invoke-RestMethod http://localhost:8000/api/health | ConvertTo-Json -Compress"'
             }
         }
