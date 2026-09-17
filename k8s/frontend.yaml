@@ -20,6 +20,24 @@ spec:
           ports:
             - containerPort: 80
 
+          redinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            intialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
           resources:
             requests:
               cpu: "250m"
