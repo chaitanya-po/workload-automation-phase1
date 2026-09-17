@@ -37,6 +37,7 @@ pipeline {
 
                 bat 'kubectl apply -f k8s/namespace.yaml'
                 bat 'kubectl apply -f k8s/secret.yaml'
+                bat 'kubectl apply -f k8s/configmap.yaml'
                 bat 'kubectl apply -f k8s/postgres.yaml'
                 bat 'kubectl apply -f k8s/backend.yaml'
                 bat 'kubectl apply -f k8s/frontend.yaml'
