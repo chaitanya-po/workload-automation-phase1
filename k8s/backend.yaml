@@ -39,7 +39,11 @@ spec:
             failureThreshold: 3
           env:
             - name: DATABASE_HOST
-              value: postgres
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DATABASE_HOST
+                  
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
