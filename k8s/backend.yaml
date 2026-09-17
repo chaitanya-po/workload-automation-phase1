@@ -19,12 +19,14 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
-          redinessProbe:
+
+          readinessProbe:
             httpGet:
               path: /api/health
               port: 8000
-            intialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 10
+            timeoutSeconds: 5
             failureThreshold: 3
 
           livenessProbe:
