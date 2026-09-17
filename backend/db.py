@@ -7,15 +7,16 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 load_dotenv()
 
 DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
-
 DB_HOST = os.getenv("DATABASE_HOST", "localhost")
+DB_PORT = os.getenv("DATABASE_PORT", "5432")
+DB_NAME = os.getenv("DATABASE_NAME", "workload_automation")
 
 if not DB_PASSWORD:
     raise RuntimeError("DATABASE_PASSWORD environment variable is not set")
 
 DATABASE_URL = (
     f"postgresql+psycopg2://postgres:{DB_PASSWORD}"
-    f"@{DB_HOST}:5432/workload_automation"
+    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
 engine = create_engine(

@@ -43,12 +43,25 @@ spec:
                 configMapKeyRef:
                   name: backend-config
                   key: DATABASE_HOST
-                  
+
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DATABASE_PORT
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DATABASE_NAME
+
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-secret
                   key: DATABASE_PASSWORD
+
+                  
           resources:
             requests:
               cpu: "250m"
