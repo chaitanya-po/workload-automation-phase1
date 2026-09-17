@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        KUBECONFIG = 'C:\\ProgramData\\Jenkins\\kind-kubeconfig.yaml'
+        KIND_EXE = 'C:\\Users\\chaitanya\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Kubernetes.kind_Microsoft.Winget.Source_8wekyb3d8bbwe\\kind.exe'
+    }
+
     stages {
 
         stage('Build Backend') {
@@ -17,40 +22,56 @@ pipeline {
             }
         }
 
-        stage('Start Application') {
+        stage('Load Images into KIND') {
             steps {
-                echo 'Starting the application...'
-                bat 'docker compose up -d'
+                echo 'Loading Docker images into KIND...'
+
+                bat '"%KIND_EXE%" load docker-image workload-backend:1.0 --name workload-cluster'
+                bat '"%KIND_EXE%" load docker-image workload-frontend:1.0 --name workload-cluster'
             }
         }
 
-        stage('Verify Application') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo 'Verifying the application...'
-                bat 'docker compose ps'
+                echo 'Deploying application to Kubernetes...'
+
+                bat 'kubectl apply -f k8s/namespace.yaml'
+                bat 'kubectl apply -f k8s/postgres.yaml'
+                bat 'kubectl apply -f k8s/backend.yaml'
+                bat 'kubectl apply -f k8s/frontend.yaml'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo 'Verifying Kubernetes deployment...'
+
+                bat 'kubectl rollout status deployment/postgres -n workload-automation --timeout=180s'
+                bat 'kubectl rollout status deployment/backend -n workload-automation --timeout=180s'
+                bat 'kubectl rollout status deployment/frontend -n workload-automation --timeout=180s'
+
+                bat 'kubectl get pods -n workload-automation'
+                bat 'kubectl get services -n workload-automation'
             }
         }
 
         stage('Health Check') {
             steps {
-                echo 'Waiting for backend to become ready...'
+                echo 'Checking deployed application...'
 
-                bat 'powershell -NoProfile -Command "Start-Sleep -Seconds 10"'
-
-                echo 'Performing health check...'
-
-                bat 'powershell -NoProfile -Command "Invoke-RestMethod http://localhost:8000/api/health | ConvertTo-Json -Compress"'
+                bat 'kubectl get pods -n workload-automation'
+                bat 'kubectl get services -n workload-automation'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Kubernetes deployment completed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed. Please check the logs for details.'
+            echo 'Kubernetes deployment failed. Please check the logs.'
         }
     }
 }
