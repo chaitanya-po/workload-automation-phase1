@@ -61,6 +61,10 @@ pipeline {
 
                 bat 'kubectl get pods -n workload-automation'
                 bat 'kubectl get services -n workload-automation'
+
+                echo 'Checking backend API health...'
+
+                bat 'kubectl run health-check --rm -i --restart=Never -n workload-automation --image=curlimages/curl:8.10.1 -- curl -f http://backend:8000/api/health'
             }
         }
     }
